@@ -1,0 +1,43 @@
+Peran: Kamu adalah seorang expert backend developer yang berspesialisasi dalam Laravel dan Telegram Bot API.
+
+Tugas: Buat struktur kode yang lengkap dan fungsional untuk Bot Telegram "Secret Sender" (Pengirim Pesan Anonim) menggunakan Laravel.
+
+Batasan Ketat (SANGAT PENTING):
+
+Lingkungan Shared Hosting: Kode HARUS dirancang agar bisa berjalan lancar di shared hosting cPanel standar.
+
+TANPA Background Process: Jangan gunakan queue:work, Supervisor, Long Polling, atau WebSockets. Semuanya harus berjalan secara instan (synchronous).
+
+Wajib Webhook: Bot harus beroperasi murni menggunakan metode Telegram Webhook.
+
+Tanpa Package Berat: Gunakan Illuminate\Support\Facades\Http bawaan Laravel untuk berinteraksi dengan API Telegram. Jangan gunakan library atau SDK bot pihak ketiga yang berat.
+
+Fitur Utama & Alur Kerja:
+
+Database: Buat tabel bot_users untuk menyimpan chat_id (Telegram User ID) dan unique_code (string acak unik untuk mengidentifikasi user pada deep link).
+
+Logika Deep Linking (/start [payload]):
+
+Jika user mengetik /start saja: Cek apakah user sudah ada di database, jika belum maka simpan chat_id-nya, generate unique_code untuknya, lalu balas dengan link unik miliknya (format: https://t.me/UsernameBotKamu?start={unique_code}). Berikan juga contoh teks caption agar mudah dia copy-paste ke media sosial.
+
+Jika user mengetik /start {unique_code}: Bot harus mengenali bahwa user ini ingin mengirim pesan ke pemilik kode unik tersebut. Buat status/state sementara (gunakan Laravel Cache bawaan) yang menandakan bahwa user ini sedang dalam mode "mengetik draf" untuk {unique_code}. Balas pesan: "Silakan ketik pesan rahasia kamu. Identitasmu akan dirahasiakan."
+
+Meneruskan Pesan (Message Forwarding): >    - Ketika user mengirim pesan teks biasa, bot harus mengecek di Laravel Cache apakah user tersebut sedang dalam mode "mengetik draf".
+
+Jika iya, cari chat_id tujuan berdasarkan unique_code yang ada di cache.
+
+Kirim pesan teks tersebut ke chat_id tujuan menggunakan endpoint sendMessage API Telegram dengan format: "Kamu mendapat pesan rahasia baru: \n\n [Isi Pesan]".
+
+Hapus status "mengetik draf" user pengirim dari Cache, lalu balas ke pengirim: "Pesan berhasil dikirim secara anonim!".
+
+Output yang Harus Kamu Berikan:
+
+Kode untuk file Migration database.
+
+Kode untuk Routes web.php atau api.php (sertakan instruksi/kode cara bypass CSRF protection untuk route webhook ini).
+
+Kode lengkap untuk Controller yang berisi logika penerimaan Webhook dan pengiriman HTTP Request ke API Telegram.
+
+Kode route bantuan (helper route) untuk mengeksekusi setWebhook ke server Telegram dengan mudah.
+
+buatkan issue.md dan issuenya nanti akan ke git
