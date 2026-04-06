@@ -74,9 +74,10 @@ php artisan migrate
 ```
 
 ### 4. Aktivasi & Cek Webhook
-- **Cek Status Bot**: Pastikan Bot terhubung ke Telegram dengan mengakses:
-  `https://domain-kamu.com/api/telegram/status`
-  (Respon JSON akan menampilkan detail Bot jika berhasil).
+- **Cek Status Bot**: Verifikasi apakah Bot terhubung ke Telegram API dengan mengakses:
+  `http://localhost:8000/api/telegram/status` (Lokal) atau
+  `https://domain-kamu.com/api/telegram/status` (Production)
+  Jika berhasil, Anda akan menerima detail Bot dalam format JSON.
 - **Set Webhook**: Hubungkan Bot dengan Telegram melalui:
   `https://domain-kamu.com/api/telegram/set-webhook`
 
