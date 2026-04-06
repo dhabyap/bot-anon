@@ -178,10 +178,10 @@ class TelegramController extends Controller
     public function status()
     {
         // 1. Validate configuration
-        if (!$this->botToken) {
+        if (!$this->botToken || $this->botToken === 'your_bot_token_here') {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Konfigurasi TELEGRAM_BOT_TOKEN belum diatur dalam file .env'
+                'message' => 'Token Bot belum diatur! Ganti "your_bot_token_here" di file .env dengan token asli dari https://t.me/BotFather'
             ], 500);
         }
 
@@ -193,9 +193,17 @@ class TelegramController extends Controller
             if (isset($data['ok']) && $data['ok'] === true) {
                 return response()->json([
                     'status' => 'connected',
-                    'message' => 'Bot berhasil terhubung ke Telegram API',
+                    'message' => '✅ Bot berhasil terhubung ke Telegram API',
                     'bot_details' => $data['result']
                 ]);
+            }
+
+            // Better Error Message for 404 (Token Invalid)
+            if (isset($data['error_code']) && $data['error_code'] == 404) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Token tidak valid (404)! Pastikan token di .env sudah benar dan tidak ada typo.'
+                ], 404);
             }
 
             return response()->json([
@@ -206,19 +214,49 @@ class TelegramController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Exception: ' . $e->getMessage()
+                'message' => 'Kesalahan Koneksi: ' . $e->getMessage() . '. Pastikan server/internet Anda dapat menjangkau api.telegram.org'
             ], 500);
         }
     }
 
     public function setWebhook()
     {
+        // 1. Validate configuration
+        if (!$this->botToken || $this->botToken === 'your_bot_token_here') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal setWebhook: Token Bot belum diatur di .env!'
+            ], 500);
+        }
+
         $webhookUrl = url('/api/telegram/webhook');
         
-        $response = Http::get($this->apiUrl . 'setWebhook', [
-            'url' => $webhookUrl
-        ]);
+        try {
+            $response = Http::get($this->apiUrl . 'setWebhook', [
+                'url' => $webhookUrl
+            ]);
 
-        return response()->json($response->json());
+            $data = $response->json();
+
+            if (isset($data['ok']) && $data['ok'] === true) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => '✅ Webhook berhasil diatur ke: ' . $webhookUrl,
+                    'telegram_response' => $data
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal setWebhook: ' . ($data['description'] ?? 'Terjadi kesalahan tidak dikenal'),
+                'webhook_url' => $webhookUrl
+            ], 400);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal setWebhook (Kesalahan Koneksi): ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
