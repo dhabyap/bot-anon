@@ -73,9 +73,12 @@ Jalankan perintah ini untuk membuat tabel yang diperlukan:
 php artisan migrate
 ```
 
-### 4. Aktivasi Webhook
-Agar Bot terhubung dengan Telegram, akses URL berikut melalui browser:
-`https://domain-kamu.com/api/telegram/set-webhook`
+### 4. Aktivasi & Cek Webhook
+- **Cek Status Bot**: Pastikan Bot terhubung ke Telegram dengan mengakses:
+  `https://domain-kamu.com/api/telegram/status`
+  (Respon JSON akan menampilkan detail Bot jika berhasil).
+- **Set Webhook**: Hubungkan Bot dengan Telegram melalui:
+  `https://domain-kamu.com/api/telegram/set-webhook`
 
 ---
 

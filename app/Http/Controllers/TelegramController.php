@@ -130,6 +130,35 @@ class TelegramController extends Controller
         ]);
     }
 
+    /**
+     * Check Bot Status (Health Check)
+     */
+    public function status()
+    {
+        try {
+            $response = Http::get($this->apiUrl . 'getMe');
+            $data = $response->json();
+
+            if (isset($data['ok']) && $data['ok'] === true) {
+                return response()->json([
+                    'status' => 'connected',
+                    'bot_details' => $data['result']
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $data['description'] ?? 'Gagal terhubung ke Telegram API'
+            ], 400);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Exception: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function setWebhook()
     {
         $webhookUrl = url('/api/telegram/webhook');
