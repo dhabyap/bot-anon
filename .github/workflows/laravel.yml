@@ -74,3 +74,4 @@ jobs:
             **/tests/**
             **/storage/logs/**
             **/node_modules/**
+            **/vendor/**
