@@ -41,36 +41,4 @@ jobs:
           DB_DATABASE: database/database.sqlite
         run: php artisan test
 
-  deploy:
-    needs: laravel-tests
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'
-
-      # Install dependencies untuk diupload ke server.
-      - name: Install Dependencies
-        run: composer install --no-dev --optimize-autoloader
-
-      # Menggunakan FTP tapi dengan pengecualian file yang tidak perlu
-      # SamKirkland FTP Action akan mendeteksi perbedaan (sync) sehingga deploy selanjutnya akan sangat cepat
-      - name: Upload files to Hosting via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.CPANEL_HOST }}
-          username: ${{ secrets.CPANEL_USERNAME }}
-          password: ${{ secrets.CPANEL_PASSWORD }}
-          server-dir: /anon.abysoft.my.id/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/tests/**
-            **/storage/logs/**
-            **/node_modules/**
+        run: php artisan test
