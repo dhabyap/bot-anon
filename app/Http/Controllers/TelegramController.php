@@ -177,13 +177,23 @@ class TelegramController extends Controller
      */
     public function status()
     {
+        // 1. Validate configuration
+        if (!$this->botToken) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Konfigurasi TELEGRAM_BOT_TOKEN belum diatur dalam file .env'
+            ], 500);
+        }
+
         try {
+            // 2. Call Telegram getMe API
             $response = Http::get($this->apiUrl . 'getMe');
             $data = $response->json();
 
             if (isset($data['ok']) && $data['ok'] === true) {
                 return response()->json([
                     'status' => 'connected',
+                    'message' => 'Bot berhasil terhubung ke Telegram API',
                     'bot_details' => $data['result']
                 ]);
             }
