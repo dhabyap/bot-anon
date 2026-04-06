@@ -83,6 +83,46 @@ php artisan migrate
 
 ---
 
+## 🛠️ Cara Test di Lokal (Menggunakan Ngrok)
+
+Karena Telegram membutuhkan URL publik (HTTPS) untuk mengirim Webhook, Anda tidak bisa menggunakan `localhost` secara langsung. Gunakan **Ngrok** untuk membuat tunnel publik ke komputer lokal Anda.
+
+### 1. Persiapan Ngrok
+1. Download [Ngrok](https://ngrok.com/download) dan daftar akun gratis.
+2. Hubungkan akun Anda dengan perintah:
+   ```bash
+   ngrok config add-authtoken <TOKEN_NGROK_ANDA>
+   ```
+
+### 2. Jalankan Server & Tunnel
+1. Jalankan server Laravel Anda:
+   ```bash
+   php artisan serve
+   ```
+   *(Default berjalan di http://127.0.0.1:8000)*
+2. Jalankan Ngrok di terminal baru:
+   ```bash
+   ngrok http 8000
+   ```
+3. Ngrok akan memberikan URL publik seperti: `https://abcd-123.ngrok-free.app`. **Copy URL ini.**
+
+### 3. Konfigurasi Bot
+1. Buka file `.env` dan update `APP_URL` dengan URL dari Ngrok tersebut:
+   ```env
+   APP_URL=https://abcd-123.ngrok-free.app
+   ```
+2. **PENTING: Aktifkan Webhook melalui URL Ngrok tersebut** dengan mengakses alamat ini di browser:
+   `https://abcd-123.ngrok-free.app/api/telegram/set-webhook`
+   *(Pastikan muncul pesan status "True" atau "Success")*
+
+### 4. Selesai!
+Sekarang Anda bisa mengirim pesan ke Bot di Telegram, dan Laravel di komputer lokal Anda akan menerima dan memproses pesan tersebut secara real-time.
+
+> [!WARNING]
+> Setiap kali Anda mematikan Ngrok dan menjalankannya lagi, URL publiknya akan berubah (untuk versi gratis). Jika URL berubah, Anda **WAJIB** mengupdate `.env` dan melakukan **Langkah 3.2 (Set Webhook)** kembali.
+
+---
+
 ## 🚀 Tips Deployment (Shared Hosting)
 1.  **Root Folder**: Pastikan domain/subdomain kamu diarahkan ke folder `/public`.
 2.  **Symlink Storage**: Jalankan `php artisan storage:link` jika diperlukan.
