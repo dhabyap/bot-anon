@@ -39,13 +39,15 @@ class TelegramController extends Controller
             $photo = $message['photo'] ?? null;
 
             // [FITUR 2] Menfess Auto-Base to Channel
-            if (Str::startsWith(strtolower($text), ['!curhat', '!spill', '!tanya'])) {
+            if (Str::startsWith(strtolower($text), ['!curhat', '!spill', '!tanya', '/curhat', '/spill', '/tanya'])) {
                 $this->handleMenfess($chatId, $text, $photo);
             } 
             // [FITUR 1] Personal Secret Sender (Only text, no photo)
             else if (!$photo) {
                 if (Str::startsWith($text, '/start')) {
                     $this->handleStartCommand($chatId, $text);
+                } else if (Str::startsWith($text, '/help')) {
+                    $this->handleHelpCommand($chatId);
                 } else {
                     $this->handleIncomingMessage($chatId, $text);
                 }
@@ -109,12 +111,18 @@ class TelegramController extends Controller
 
             $link = "https://t.me/{$this->botUsername}?start={$uniqueCode}";
             
-            $reply = "Halo! Ini adalah link Secret Sender kamu:\n\n" .
-                     "{$link}\n\n" .
-                     "Bagikan link ini untuk menerima pesan anonim!\n\n" .
-                     "Atau gunakan awalan !curhat, !spill, atau !tanya untuk posting anonim ke Channel.\n\n" .
-                     "Contoh caption:\n" .
-                     "Kirim pesan anonim buat aku dong! Sikat di sini:\n{$link}";
+            $reply = "<b>🌟 Selamat Datang di Secret Sender Bot!</b>\n\n" .
+                     "Halo! Saya adalah asisten anonimmu. Berikut adalah fitur yang bisa kamu gunakan:\n\n" .
+                     "<b>1. Link Secret Sender Pribadi</b>\n" .
+                     "Bagikan link di bawah ini ke teman atau sosial mediamu untuk menerima pesan rahasia:\n" .
+                     "<code>{$link}</code>\n\n" .
+                     "<b>2. Menfess Auto-Base (Channel)</b>\n" .
+                     "Kamu bisa memposting pesan anonim langsung ke channel @menfess_channel dengan perintah:\n" .
+                     "• <code>/curhat</code> - Untuk berbagi keluh kesah\n" .
+                     "• <code>/spill</code> - Untuk spill sesuatu\n" .
+                     "• <code>/tanya</code> - Untuk bertanya anonim\n\n" .
+                     "<i>Contoh: /curhat Hari ini aku senang sekali!</i>\n\n" .
+                     "Ketik /help untuk panduan lengkap.";
 
             $this->sendMessage($chatId, $reply);
 
@@ -136,6 +144,23 @@ class TelegramController extends Controller
                 $this->sendMessage($chatId, "Link tidak valid atau pengguna tidak ditemukan.");
             }
         }
+    }
+
+    protected function handleHelpCommand($chatId)
+    {
+        $reply = "<b>📖 Panduan Penggunaan Bot</b>\n\n" .
+                 "<b>Cara Kerja Secret Sender:</b>\n" .
+                 "1. Ketik /start untuk mendapatkan link unikmu.\n" .
+                 "2. Sebar link tersebut ke profil atau story-mu.\n" .
+                 "3. Jika ada yang mengirim pesan melalui link itu, Bot akan meneruskannya kepadamu secara anonim.\n\n" .
+                 "<b>Cara Kerja Menfess (Post ke Channel):</b>\n" .
+                 "Kirim pesan langsung ke bot ini (bisa berupa teks atau foto) dengan diawali salah satu perintah berikut:\n" .
+                 "• <code>/curhat [pesan kamu]</code>\n" .
+                 "• <code>/spill [pesan kamu]</code>\n" .
+                 "• <code>/tanya [pesan kamu]</code>\n\n" .
+                 "<i>Catatan: Prefix lama (tanda seru !) juga masih bisa digunakan.</i>";
+
+        $this->sendMessage($chatId, $reply);
     }
 
     protected function handleIncomingMessage($chatId, $text)

@@ -83,6 +83,24 @@ php artisan migrate
 
 ---
 
+## 💡 Tips UX: Mendaftarkan Menu Perintah (Suggestion Menu)
+Agar pengguna mendapatkan pengalaman terbaik, Anda harus mendaftarkan perintah bot ke **@BotFather** agar muncul saat pengguna mengetik `/`.
+
+1. Chat [@BotFather](https://t.me/BotFather) di Telegram.
+2. Kirim perintah `/setcommands`.
+3. Pilih bot Anda.
+4. Kirim daftar perintah berikut dalam satu pesan:
+   ```text
+   start - Dapatkan link Secret Sender kamu
+   help - Buka panduan penggunaan lengkap
+   curhat - Kirim menfess curhat ke channel
+   spill - Kirim menfess spill ke channel
+   tanya - Kirim menfess tanya ke channel
+   ```
+5. Tunggu beberapa saat, dan menu `/` akan muncul di bot Anda!
+
+---
+
 ## 🛠️ Cara Test di Lokal (Menggunakan Ngrok)
 
 Karena Telegram membutuhkan URL publik (HTTPS) untuk mengirim Webhook, Anda tidak bisa menggunakan `localhost` secara langsung. Gunakan **Ngrok** untuk membuat tunnel publik ke komputer lokal Anda.
