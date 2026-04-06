@@ -18,4 +18,5 @@ use App\Http\Controllers\TelegramController;
 Route::post('/telegram/webhook', [TelegramController::class, 'handleWebhook']);
 
 // Helper endpoint untuk mengatur setWebhook dengan mudah
+Route::get('/telegram/status', [TelegramController::class, 'status']);
 Route::get('/telegram/set-webhook', [TelegramController::class, 'setWebhook']);

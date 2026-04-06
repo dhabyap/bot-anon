@@ -173,21 +173,34 @@ class TelegramController extends Controller
     }
 
     /**
-     * Send photo using file_id
+     * Check Bot Status (Health Check)
      */
-    protected function sendPhoto($chatId, $fileId, $caption)
+    public function status()
     {
-        Http::post($this->apiUrl . 'sendPhoto', [
-            'chat_id' => $chatId,
-            'photo' => $fileId,
-            'caption' => $caption,
-            'parse_mode' => 'HTML'
-        ]);
+        try {
+            $response = Http::get($this->apiUrl . 'getMe');
+            $data = $response->json();
+
+            if (isset($data['ok']) && $data['ok'] === true) {
+                return response()->json([
+                    'status' => 'connected',
+                    'bot_details' => $data['result']
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $data['description'] ?? 'Gagal terhubung ke Telegram API'
+            ], 400);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Exception: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
-    /**
-     * Helper to set Webhook
-     */
     public function setWebhook()
     {
         $webhookUrl = url('/api/telegram/webhook');
