@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -42,28 +42,28 @@ jobs:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
         run: php artisan test
-        deploy:
-          needs: laravel-tests
-          runs-on: ubuntu-latest
-          if: github.ref == 'refs/heads/main'
 
-          steps:
-            - name: Checkout Code
-              uses: actions/checkout@v4
+  deploy:
+    needs: laravel-tests # Memastikan deploy HANYA jalan kalau testing-nya sukses
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' # Hanya otomatis deploy jika ada push di branch "main"
 
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                php-version: "8.1" # Sesuaikan dengan versimu
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-            - name: Install Dependencies
-              run: composer install --no-dev --optimize-autoloader
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
 
-            - name: Upload files to Hosting via FTP
-              uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-              with:
-                server: ${{ secrets.CPANEL_HOST }}
-                username: ${{ secrets.CPANEL_USERNAME }}
-                password: ${{ secrets.CPANEL_PASSWORD }}
-                server-dir: /anon.abysoft.my.id/ # Pastikan nama foldernya benar (jangan lupa garis miring di akhir)
+      - name: Install Dependencies
+        run: composer install --no-dev --optimize-autoloader
 
+      - name: Upload files to Hosting via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.CPANEL_HOST }}
+          username: ${{ secrets.CPANEL_USERNAME }}
+          password: ${{ secrets.CPANEL_PASSWORD }}
+          server-dir: /anon.abysoft.my.id/ # Pastikan nama foldernya benar
